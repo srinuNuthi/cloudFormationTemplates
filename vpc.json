@@ -44,7 +44,12 @@
                     "Ref": "web1cidr"
                 },
                 "VpcId" : 
-                { "Ref": "myvpc" }
+                { "Ref": "myvpc" },
+                "AvailabilityZone": { "Fn::Select": [0, { "Fn::GetAZs": "" }] },
+                
+                "Tags":[
+                { "Key": "name", "Value":  "app1sub" }
+                ]
                 
             }
         },
@@ -55,7 +60,13 @@
                     "Ref": "web2cidr"
                 },
                 "VpcId" : 
-                { "Ref": "myvpc" }
+                { "Ref": "myvpc" },
+                "AvailabilityZone": { "Fn::Select": [1, { "Fn::GetAZs": "" }] },
+                
+                "Tags":[
+                { "Key": "name", "Value":  "app2sub" }
+                ]
+
                 
             }
         },
@@ -66,7 +77,13 @@
                     "Ref": "db1cidr"
                 },
                 "VpcId" : 
-                { "Ref": "myvpc" }
+                { "Ref": "myvpc" },
+                "AvailabilityZone": { "Fn::Select": [2, { "Fn::GetAZs": "" }] },
+                
+                "Tags":[
+                { "Key": "name", "Value":  "db1sub" }
+                ]
+
                 
             }
         },
@@ -77,9 +94,32 @@
                     "Ref": "db2cidr"
                 },
                 "VpcId" : 
-                { "Ref": "myvpc" }
+                { "Ref": "myvpc" },
+                "AvailabilityZone": { "Fn::Select": [3, { "Fn::GetAZs": "" }] },
+                
+                "Tags":[
+                { "Key": "name", "Value":  "db2sub" }
+                ]
+
                 
             }
-        }
-    }
+        },
+        
+        
+            "rdsDBSubnetGroup": {
+                "Type": "AWS::RDS::DBSubnetGroup",
+                "Properties": {
+                    "DBSubnetGroupDescription": "This subnet group is useful for launching the RDS",
+                    "SubnetIds": [
+                        {
+                          "Ref": "db1subnet"
+                        },
+                        {
+                          "Ref": "db2subnet"
+                        }
+                      ]
+                }
+            }
+        
+     }
 }
