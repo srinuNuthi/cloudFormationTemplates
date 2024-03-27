@@ -3,32 +3,31 @@
     "Description": "going to create the vpc",
     "Parameters": {
         "vpcCidr": {
-            "Type": "string",
+            "Type": "String",
             "Default": "10.0.0.0/16",
             "Description": "enter the cidr range here"
+        },
+        "web1cidr": {
+            "Type": "String",
+            "Default": "10.0.4.0/24",
+            "Description": "enter the subnet cidr range here"
+        },
+        "web2cidr": {
+            "Type": "String",
+            "Default": "10.0.3.0/24",
+            "Description": "enter the subnet cidr range here"
+        },
+        "db1cidr": {
+            "Type": "String",
+            "Default": "10.0.2.0/24",
+            "Description": "enter the subnet cidr range here"
+        },
+        "db2cidr": {
+            "Type": "String",
+            "Default": "10.0.1.0/24",
+            "Description": "enter the subnet cidr range here"
         }
     },
-    "web1cidr" : {
-        "Type" : "string",
-        "Default" : "10.0.0.1/24",
-        "Description" :"enter the subnet cidr range here"
-    },
-    "web2cidr" : {
-        "Type" : "string",
-        "Default" : "10.0.0.2/24",
-        "Description" :"enter the subnet cidr range here"
-    },
-    "db1cidr" : {
-        "Type" : "string",
-        "Default" : "10.0.0.3/24",
-        "Description" :"enter the subnet cidr range here"
-    },
-    "db2cidr" : {
-        "Type" : "string",
-        "Default" : "10.0.0.4/24",
-        "Description" :"enter the subnet cidr range here"
-    },
-
     "Resources": {
         "myvpc": {
             "Type": "AWS::EC2::VPC",
@@ -38,29 +37,49 @@
                 }
             }
         },
-        "app1subnet" : {
-            "Type" : "AWS::EC2::Subnet",
-            "CidrBlock" : 
-            { "Ref": "web1cidr" }
-            
+        "app1subnet": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "web1cidr"
+                },
+                "VpcId" : 
+                { "Ref": "myvpc" }
+                
+            }
         },
-        "app2subnet" : {
-            "Type" : "AWS::EC2::Subnet",
-            "CidrBlock" : 
-            { "Ref": "web2cidr" }
-            
+        "app2subnet": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "web2cidr"
+                },
+                "VpcId" : 
+                { "Ref": "myvpc" }
+                
+            }
         },
-        "db1subnet" : {
-            "Type" : "AWS::EC2::Subnet",
-            "CidrBlock" : 
-            { "Ref": "db1cidr" }
-            
+        "db1subnet": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "db1cidr"
+                },
+                "VpcId" : 
+                { "Ref": "myvpc" }
+                
+            }
         },
-        "db2subnet" : {
-            "Type" : "AWS::EC2::Subnet",
-            "CidrBlock" : 
-            { "Ref": "db2cidr" }
-            
+        "db2subnet": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "db2cidr"
+                },
+                "VpcId" : 
+                { "Ref": "myvpc" }
+                
+            }
         }
     }
 }
