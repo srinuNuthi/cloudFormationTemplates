@@ -135,7 +135,7 @@
 
                 "CidrBlock": {
                     "Ref": "web1cidr"
-                },
+                },  
                 "Tags": [
                     {
                         "Key": "Name",
