@@ -293,7 +293,7 @@
             "Condition": "createRDSInstance",
             "Properties": {
                 "AllocatedStorage": 20,
-                "DBInstanceClass": "db.t3.micro",
+                "DBInstanceClass": "db2.t3.micro",
                 "AllowMajorVersionUpgrade": false,
                 "AutoMinorVersionUpgrade": false,
                 "BackupRetentionPeriod": 0,
