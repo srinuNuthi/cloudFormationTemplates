@@ -1,61 +1,438 @@
 {
-    "AWSTemplateFormatVersion" : "2010-09-09",
-    "Description" : "i am going to create the ntier vpc architecture",
-    "Parameters" : {
-       "vpccidr" : {
-        "Type" : "String",
-        "Default" : "10.0.0.0/16",
-        "Description" : "if you want change the vpc range"
-       } ,
-       "webicidr" : {
-        "Type" : "String",
-        "Default" : "10.0.0.0/24",
-        "AllowedValues" : [
-            "10.0.0.0/24", "10.0.1.0/24", "10.0.2.0/24" 
-        ],
-        "Description" : " this is the cidr range of web1"
-       }
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "I am going to create the n-tier VPC architecture",
+    "Parameters": {
+        "vpccidr": {
+            "Type": "String",
+            "Default": "10.0.0.0/16",
+            "Description": "If you want to change the VPC range"
+        },
+        "webicidr": {
+            "Type": "String",
+            "Default": "10.0.0.0/24",
+            "Description": "This is the CIDR range of web1"
+        },
+        "web2cidr": {
+            "Type": "String",
+            "Default": "10.0.1.0/24",
+            "Description": "This is the CIDR range of web2"
+        },
+        "db1cidr": {
+            "Type": "String",
+            "Default": "10.0.2.0/24",
+            "Description": "This is the CIDR range of db1"
+        },
+        "db2cidr": {
+            "Type": "String",
+            "Default": "10.0.3.0/24",
+            "Description": "This is the CIDR range of db2"
+        },
+        "createvm": {
+            "Type": "String",
+            "Default": "yes",
+            "AllowedValues": [
+                "yes",
+                "no"
+            ],
+            "Description": "Specify 'yes' to create the EC2 instance, 'no' to skip creating the EC2 instance."
+        }
     },
-    "Resources" : {
-        "myvpc" : {
-           "Type" : "AWS::EC2::VPC",
-           "Properties" : {
-            "CidrBlock" : 
-            { "Ref": "vpccidr" }
-            ,
-            "InstanceTenancy" : "default",
-            "Tags" : [
+    "Conditions": {
+        "createWebVM": {
+            "Fn::Equals": [
                 {
-                    "Key" : "Name",
-                    "Value" : "vpcfromCloudformation"
+                    "Ref": "createvm"
                 },
-                {
-                    "Key" : "environment",
-                    "Value" : "dev"
-                }
+                "yes"
             ]
-           }
-        } ,
-        "web1subnet" :  {
-            "Type" : "AWS::EC2::Subnet",
-            "Properties" : {
-                "AvailabilityZone": { "Fn::Select": [0, { "Fn::GetAZs": "" }] },
-                 "CidrBlock" : 
-                 { "Ref": "webicidr" },
-                 "VpcId" : 
-                 { "Ref": "myvpc" },
-                 
-                 "Tags" : [
+        }
+    },
+    "Resources": {
+        "myvpc": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "vpccidr"
+                },
+                "InstanceTenancy": "default",
+                "Tags": [
                     {
-                        "Key" : "Name",
-                        "Value" : "web1subnet"
+                        "Key": "Name",
+                        "Value": "vpcfromCloudformation"
                     },
                     {
-                        "Key" : "environment",
-                        "Value" : "dev"
+                        "Key": "environment",
+                        "Value": "dev"
                     }
                 ]
-
+            }
+        },
+        "web1subnet": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        0,
+                        {
+                            "Fn::GetAZs": ""
+                        }
+                    ]
+                },
+                "CidrBlock": {
+                    "Ref": "webicidr"
+                },
+                "VpcId": {
+                    "Ref": "myvpc"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "web1subnet"
+                    },
+                    {
+                        "Key": "environment",
+                        "Value": "dev"
+                    }
+                ]
+            }
+        },
+        "web2subnet": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        1,
+                        {
+                            "Fn::GetAZs": ""
+                        }
+                    ]
+                },
+                "CidrBlock": {
+                    "Ref": "web2cidr"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "web2subnet"
+                    },
+                    {
+                        "Key": "createdBy",
+                        "Value": "cloudformation"
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "myvpc"
+                }
+            }
+        },
+        "db1subnet": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        2,
+                        {
+                            "Fn::GetAZs": ""
+                        }
+                    ]
+                },
+                "CidrBlock": {
+                    "Ref": "db1cidr"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "db1subnet"
+                    },
+                    {
+                        "Key": "createdBy",
+                        "Value": "cloudformation"
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "myvpc"
+                }
+            }
+        },
+        "db2subnet": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        4,
+                        {
+                            "Fn::GetAZs": ""
+                        }
+                    ]
+                },
+                "CidrBlock": {
+                    "Ref": "db2cidr"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "db2subnet"
+                    },
+                    {
+                        "Key": "createdBy",
+                        "Value": "cloudformation"
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "myvpc"
+                }
+            }
+        },
+        "DBSubnetGroup": {
+            "Type": "AWS::RDS::DBSubnetGroup",
+            "Properties": {
+                "SubnetIds": [
+                    {
+                        "Ref": "db1subnet"
+                    },
+                    {
+                        "Ref": "db2subnet"
+                    }
+                ],
+                "DBSubnetGroupDescription": "This is the RDS DB subnet Group",
+                "DBSubnetGroupName": "rdsDBSubnetGroup",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "dbsubnetGroup"
+                    },
+                    {
+                        "Key": "createdBy",
+                        "Value": "cloudformation"
+                    }
+                ]
+            }
+        },
+        "ntierdb": {
+            "Type": "AWS::RDS::DBInstance",
+            "Properties": {
+                "AllocatedStorage": 20,
+                "DBInstanceClass": "db.t3.micro",
+                "AllowMajorVersionUpgrade": false,
+                "AutoMinorVersionUpgrade": false,
+                "BackupRetentionPeriod": 0,
+                "DBInstanceIdentifier": "kumar",
+                "DBName": "employees",
+                "VPCSecurityGroups": [
+                    {
+                        "Ref": "myrdssg"
+                    }
+                ],
+                "DBSubnetGroupName": {
+                    "Ref": "DBSubnetGroup"
+                },
+                "Engine": "mysql",
+                "EngineVersion": "8.0.35",
+                "MasterUsername": "admin",
+                "MasterUserPassword": "adminadmin",
+                "MultiAZ": false,
+                "Port": "3306",
+                "PubliclyAccessible": false,
+                "StorageType": "gp2",
+                "Tags": [
+                    {
+                        "Key": "Env",
+                        "Value": "Dev"
+                    },
+                    {
+                        "Key": "CreatedBy",
+                        "Value": "Cloudformation"
+                    }
+                ]
+            }
+        },
+        "myrdssg": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "This is the SG for RDS",
+                "GroupName": "rdsSg",
+                "SecurityGroupIngress": [
+                    {
+                        "CidrIp": {
+                            "Ref": "vpccidr"
+                        },
+                        "FromPort": 3306,
+                        "IpProtocol": "tcp",
+                        "ToPort": 3306,
+                        "Tags": [
+                            {
+                                "Key": "Env",
+                                "Value": "Dev"
+                            },
+                            {
+                                "Key": "CreatedBy",
+                                "Value": "Cloudformation"
+                            }
+                        ]
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "myvpc"
+                }
+            }
+        },
+        "myigw": {
+            "Type": "AWS::EC2::InternetGateway",
+            "Properties": {
+                "Tags": [
+                    {
+                        "Key": "Env",
+                        "Value": "internetGateway"
+                    },
+                    {
+                        "Key": "CreatedBy",
+                        "Value": "Cloudformation"
+                    }
+                ]
+            }
+        },
+        "attachGateway": {
+            "Type": "AWS::EC2::VPCGatewayAttachment",
+            "Properties": {
+                "InternetGatewayId": {
+                    "Ref": "myigw"
+                },
+                "VpcId": {
+                    "Ref": "myvpc"
+                }
+            }
+        },
+        "myroutetable": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "Tags": [
+                    {
+                        "Key": "Env",
+                        "Value": "routetable"
+                    },
+                    {
+                        "Key": "CreatedBy",
+                        "Value": "Cloudformation"
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "myvpc"
+                }
+            }
+        },
+        "publicrt": {
+            "Type": "AWS::EC2::Route",
+            "Properties": {
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "GatewayId": {
+                    "Ref": "myigw"
+                },
+                "RouteTableId": {
+                    "Ref": "myroutetable"
+                }
+            }
+        },
+        "web1Asscoiation": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "myroutetable"
+                },
+                "SubnetId": {
+                    "Ref": "web1subnet"
+                }
+            }
+        },
+        "web2Asscoiation": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "myroutetable"
+                },
+                "SubnetId": {
+                    "Ref": "web2subnet"
+                }
+            }
+        },
+        "ec2sg": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "this is for ec2",
+                "GroupName": "ec2Sg",
+                "VpcId": {
+                    "Ref": "myvpc"
+                },
+                "SecurityGroupIngress": [
+                    {
+                        "CidrIp": "0.0.0.0/0",
+                        "Description": "allow port number 80",
+                        "FromPort": 80,
+                        "IpProtocol": "tcp",
+                        "ToPort": 80
+                    },
+                    {
+                        "CidrIp": "0.0.0.0/0",
+                        "Description": "allow port number 22",
+                        "FromPort": 22,
+                        "IpProtocol": "tcp",
+                        "ToPort": 22
+                    }
+                ]
+            }
+        },
+        "myec2insatnce": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": "ami-080e1f13689e07408",
+                "InstanceType": "t2.micro",
+                "KeyName": "ssh_key.pub",
+                "NetworkInterfaces": [
+                    {
+                        "AssociatePublicIpAddress": true,
+                        "SubnetId": {
+                            "Ref": "web1subnet"
+                        },
+                        "GroupSet": [
+                            {
+                                "Ref": "ec2sg"
+                            }
+                        ],
+                        "DeviceIndex": "0"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "\n",
+                            [
+                                "#!/bin/bash",
+                                "sudo apt update",
+                                "sudo apt install apache2 -y"
+                            ]
+                        ]
+                    }
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "ec2fromCF"
+                    },
+                    {
+                        "Key": "CreatedBy",
+                        "Value": "Cloudformation"
+                    }
+                ]
+            }
+        }
+    },
+    "Outputs": {
+        "PublicIP": {
+            "Description": "Public IP address of the EC2 instance.",
+            "Value": {
+                "Fn::GetAtt": [
+                    "myec2insatnce",
+                    "PublicIp"
+                ]
             }
         }
     }
