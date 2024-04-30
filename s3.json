@@ -1,15 +1,53 @@
 {
-    "AWSTemplateFormatVersion" : "2010-09-09",
-    "Description": "creating the s3 bucket",
-    "Resources" : {
-        "mybucket" : {
-            "Type" : "AWS::S3::Bucket",
-            "Properties" : {
-                "BucketName": "my-cloudformation-bucket-2024"
+  "Resources": {
+    "MyBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "my-bucket-namefromcftemplatewrittenbyme",
+        "AccessControl": "Private"
+      }
+    },
+    "MyBucketPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "MyBucketPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "s3:CreateBucket",
+                "s3:PutBucketPolicy"
+              ],
+              "Resource": "*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "s3:GetObject"
+              ],
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::",
+                    {
+                      "Ref": "MyBucket"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
             }
-        }
-        
-      
-        
+          ]
+        },
+        "Users": [
+          {
+            "Ref": "AWS::AccountId"
+          }
+        ]
+      }
     }
+  }
 }
